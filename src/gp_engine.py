@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from deap import base, creator, tools, gp, algorithms
 from sklearn.cluster import KMeans
-from knapsack import Item, KnapsackState, KnapsackInstance
+from knaspsack import Item, KnapsackState, KnapsackInstance
 
 def div_segura(izq, der):
     # Prevención de división por cero
@@ -33,15 +33,13 @@ toolbox.register("compile", gp.compile, pset=pset)
 # Evaluación de la hiper-heurística con control de memoria (Bloat)
 def evaluar_hiper_heuristica(individuo, instancia):
     rutina_puntuacion = toolbox.compile(expr=individuo)
-    mochila = KnapsackState(capacity=instancia.capacity)
-    
+    mochila = KnapsackState(capacity=instancia.capacity)  
     items_puntuados = []
     for item in instancia.items:
         puntuacion = rutina_puntuacion(item.profit, item.weight, item.ratio)
         items_puntuados.append((puntuacion, item))
-        
-    items_puntuados.sort(key=lambda x: x[0], reverse=True)
-    
+
+    items_puntuados.sort(key=lambda x: x[0], reverse=True)  
     for puntuacion, item in items_puntuados:
         mochila.pack(item)
         

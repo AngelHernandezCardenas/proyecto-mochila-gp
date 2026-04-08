@@ -1,4 +1,4 @@
-from knapsack import Item, KnapsackState
+from knaspsack import Item, KnapsackState
 
 # Definimos la heurística para que la prueba pueda funcionar
 def heuristica_max_pw(mochila, objetos):
