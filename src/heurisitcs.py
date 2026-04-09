@@ -1,15 +1,5 @@
-import sys
-import os
-import csv
-
-# Configurar path para importaciones locales
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-try:
-    from knapsack import Item, KnapsackState, KnapsackInstance
-except ImportError as e:
-    print(f"Error al importar knapsack: {e}")
-    raise
+import pandas as pd
+from knapsack import Item, KnapsackState, KnapsackInstance
 
 # 1. Definición de la heurística clásica (Greedy)
 def heuristica_max_pw(mochila, objetos):
@@ -30,7 +20,7 @@ def evaluar_instancias_baseline(lista_instancias):
     resultados = []
     heuristica_activa = HEURISTIC_MAP["MaxPW"]
     
-    print("INICIANDO EXTRACCIÓN DE LÍNEA BASE (HEURÍSTICA VORAZ) ")
+    print("INICIANDO EXTRACCIÓN DE LÍNEA BASE (HEURÍSTICA VORAZ)")
     
     for instancia in lista_instancias:
         mochila = KnapsackState(capacity=instancia.capacity)
@@ -55,13 +45,10 @@ def evaluar_instancias_baseline(lista_instancias):
         })
         print(f"Instancia procesada: {instancia.instance_id} | Ganancia lograda: {mochila.current_profit}")
 
-    # 3. Automatización de reporte CSV mediante csv
+    # 3. Automatización de reporte CSV mediante Pandas
+    df_resultados = pd.DataFrame(resultados)
     nombre_archivo = "baseline_heuristics.csv"
-    fieldnames = ["Instancia", "Capacidad_Max", "Peso_Ocupado", "Ganancia_Total"]
-    with open(nombre_archivo, mode="w", newline="", encoding="utf-8") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(resultados)
+    df_resultados.to_csv(nombre_archivo, index=False)
     
     print(f"\nReporte estadístico guardado exitosamente en: {nombre_archivo}")
 

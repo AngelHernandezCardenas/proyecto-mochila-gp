@@ -1,6 +1,6 @@
 {
   "include": ["src"],
-  "pythonVersion": "3.9",
+  "pythonVersion": "3.10",
   "typeCheckingMode": "basic",
-  "pythonPath": "./src"
+  "extraPaths": ["src"]
 }
