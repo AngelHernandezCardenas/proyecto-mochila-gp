@@ -1,10 +1,20 @@
 import operator
 import multiprocessing
+import sys
+import os
 import numpy as np
-import pandas as pd
+import csv
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from deap import base, creator, tools, gp, algorithms
 from sklearn.cluster import KMeans
-from knaspsack import Item, KnapsackState, KnapsackInstance
+
+try:
+    from knapsack import Item, KnapsackState, KnapsackInstance
+except ImportError as e:
+    print(f"Error al importar knapsack: {e}")
+    raise
 
 def div_segura(izq, der):
     # Prevención de división por cero
@@ -98,7 +108,7 @@ def clasificar_y_evolucionar(lista_instancias, num_clusters=2, generaciones=15):
         salon_fama = tools.HallOfFame(1)
         
         # Bucle generacional automático
-        poblacion_final, bitacora = algorithms.eaSimple(
+        _, bitacora = algorithms.eaSimple(
             poblacion, toolbox, cxpb=0.7, mutpb=0.2, ngen=generaciones, 
             stats=estadisticas, halloffame=salon_fama, verbose=True
         )
@@ -107,10 +117,14 @@ def clasificar_y_evolucionar(lista_instancias, num_clusters=2, generaciones=15):
         mejor_individuo = salon_fama[0]
         mejores_reglas[cluster_id] = str(mejor_individuo)
         
-        # Automatización de reportes CSV mediante Pandas
-        df_log = pd.DataFrame(bitacora)
+        # Automatización de reportes CSV mediante csv
         nombre_archivo_csv = f"bitacora_cluster_{cluster_id}.csv"
-        df_log.to_csv(nombre_archivo_csv, index=False)
+        if bitacora:
+            fieldnames = list(bitacora[0].keys())
+            with open(nombre_archivo_csv, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(bitacora)
         print(f"Datos exportados exitosamente a: {nombre_archivo_csv}")
         
     # Cierre de los hilos de procesamiento
@@ -118,7 +132,7 @@ def clasificar_y_evolucionar(lista_instancias, num_clusters=2, generaciones=15):
     pool.join()
     
     # Automatización de guardado de fórmulas ganadoras
-    with open("mejores_reglas_historicas.txt", "w") as archivo_texto:
+    with open("mejores_reglas_historicas.txt", "w", encoding="utf-8") as archivo_texto:
         archivo_texto.write(" REPORTE DE FÓRMULAS EVOLUTIVAS \n")
         for cluster_id, regla in mejores_reglas.items():
             archivo_texto.write(f"Clúster {cluster_id}:\n{regla}\n\n")

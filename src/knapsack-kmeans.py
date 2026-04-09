@@ -1,8 +1,18 @@
 import operator                                  # Operadores matematicos basicos
-import random                                    # Generacion de numeros aleatorios
+import sys                                       # Para manejo de rutas
+import os                                        # Para obtener rutas del sistema
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))) # Agregar ruta actual al path
 import numpy as np                               # Manejo de arreglos y matematicas
-from deap import base, creator, tools, gp        # Libreria principal de evolucion (GP)
-from sklearn.cluster import KMeans               # Libreria para el amontonamiento inteligente
+
+try:
+    from deap import base, creator, tools, gp        # Libreria principal de evolucion (GP)
+except ImportError:
+    print("Advertencia: DEAP no está instalado. Instale con: pip install deap")
+    
+try:
+    from sklearn.cluster import KMeans               # Libreria para el amontonamiento inteligente
+except ImportError:
+    print("Advertencia: scikit-learn no está instalado. Instale con: pip install scikit-learn")
 
 # 1. Definicion de funciones matematicas seguras
 def div_segura(izq, der):                        # Evita divisiones por cero en los arboles
@@ -42,7 +52,7 @@ def evaluar_heuristica(individuo, elementos, capacidad): # Funcion que pone a pr
     ganancia_total = 0                           # Inicia la ganancia de la mochila en cero
     peso_actual = 0                              # Inicia el peso de la mochila en cero
     
-    for punt, p, w in elementos_puntuados:       # Intenta empaquetar en el orden que dicto la IA
+    for _, p, w in elementos_puntuados:       # Intenta empaquetar en el orden que dicto la IA
         if peso_actual + w <= capacidad:         # Si el objeto aun cabe en la mochila
             ganancia_total += p                  # Suma la ganancia
             peso_actual += w                     # Suma el peso
@@ -57,7 +67,7 @@ toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr, pset=pset) # Metodo
 # 5. Modulo K-Means y Bucle Principal
 def clasificar_y_evolucionar(instancias):        # Funcion principal que une Clustering y GP
     caracteristicas = []                         # Lista para extraer rasgos matematicos de los problemas
-    for elementos, cap in instancias:            # Recorre las bases de datos de prueba
+    for elementos, _cap in instancias:            # Recorre las bases de datos de prueba
         promedio_p = np.mean([e[0] for e in elementos]) # Extrae la ganancia promedio de la instancia
         promedio_w = np.mean([e[1] for e in elementos]) # Extrae el peso promedio de la instancia
         caracteristicas.append([promedio_p, promedio_w]) # Guarda los rasgos en un vector

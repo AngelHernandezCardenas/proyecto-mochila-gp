@@ -1,62 +1,80 @@
-from knaspsack import Item, KnapsackState
+import sys
+import os
+import csv
 
-# Definimos la heurística para que la prueba pueda funcionar
+# Configurar path para importaciones locales
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from knapsack import Item, KnapsackState, KnapsackInstance
+except ImportError as e:
+    print(f"Error al importar knapsack: {e}")
+    raise
+
+# 1. Definición de la heurística clásica (Greedy)
 def heuristica_max_pw(mochila, objetos):
     # Ordena los objetos por su ratio (ganancia/peso) de mayor a menor
     mejores = sorted(objetos, key=lambda x: x.ratio, reverse=True)
     for obj in mejores:
-        if mochila.can_pack(obj): # Si el mejor objeto cabe, lo recomienda
+        if mochila.can_pack(obj): 
             return obj
-    return None # Si ya no cabe nada, devuelve None
+    return None 
 
-# Mapa de heurísticas disponibles
+# Mapa de heurísticas estáticas disponibles
 HEURISTIC_MAP = {
     "MaxPW": heuristica_max_pw
 }
 
-def test_manual_knapsack():
-    print("=== INICIANDO PRUEBA DE MOCHILA ===")
-    
-    # 1. Creamos una mochila con capacidad de 15 kg
-    mochila = KnapsackState(capacity=15.0)
-    
-    # 2. Creamos nuestro "universo" de objetos (ID, Peso, Ganancia)
-    objetos_disponibles = [
-        Item(1, 12.0, 4.0),   # Objeto pesado, poco valor
-        Item(2, 2.0, 2.0),    # Objeto ligero, valor medio
-        Item(3, 1.0, 1.0),    # Objeto muy ligero, poco valor
-        Item(4, 4.0, 10.0),   # Objeto medio, MUY valioso (El mejor)
-        Item(5, 1.0, 2.0)     # Objeto ligero, buen valor
-    ]
-    
-    print(f"Estado inicial: {mochila}")
-    
-    # 3. Simulamos que la IA eligió la heurística "MaxPW" (Max Profit/Weight)
+# 2. Extractor masivo de línea base (Benchmark)
+def evaluar_instancias_baseline(lista_instancias):
+    resultados = []
     heuristica_activa = HEURISTIC_MAP["MaxPW"]
-    print("\n--- Seleccionando objetos con la heurística MaxPW ---")
     
-    paso = 1
-    while True:
-        # La heurística analiza el estado y los objetos, y nos recomienda el mejor
-        mejor_objeto = heuristica_activa(mochila, objetos_disponibles)
+    print("INICIANDO EXTRACCIÓN DE LÍNEA BASE (HEURÍSTICA VORAZ) ")
+    
+    for instancia in lista_instancias:
+        mochila = KnapsackState(capacity=instancia.capacity)
+        # Creamos una copia de la lista de objetos para ir eliminándolos al empacar
+        objetos_disponibles = list(instancia.items) 
         
-        # Si nos devuelve None, significa que ya no cabe nada
-        if mejor_objeto is None:
-            print("Ya no caben más objetos o se acabaron.")
-            break
+        # Bucle de empaquetado para la instancia actual
+        while True:
+            mejor_objeto = heuristica_activa(mochila, objetos_disponibles)
+            if mejor_objeto is None:
+                break # Rompe el ciclo si ya no cabe nada
             
-        # Empacamos el objeto
-        mochila.pack(mejor_objeto)
-        # Lo quitamos de la mesa para no volver a agarrarlo
-        objetos_disponibles.remove(mejor_objeto)
-        
-        print(f"Paso {paso}: Se empacó el {mejor_objeto}")
-        print(f"  -> {mochila}")
-        paso += 1
+            mochila.pack(mejor_objeto)
+            objetos_disponibles.remove(mejor_objeto)
+            
+        # Guardado de métricas por instancia
+        resultados.append({
+            "Instancia": instancia.instance_id,
+            "Capacidad_Max": instancia.capacity,
+            "Peso_Ocupado": mochila.current_weight,
+            "Ganancia_Total": mochila.current_profit
+        })
+        print(f"Instancia procesada: {instancia.instance_id} | Ganancia lograda: {mochila.current_profit}")
 
-    print("\n=== RESULTADO FINAL ===")
-    print(f"Ganancia total: ${mochila.current_profit}")
-    print(f"Peso final: {mochila.current_weight} / {mochila.capacity} kg")
+    # 3. Automatización de reporte CSV mediante csv
+    nombre_archivo = "baseline_heuristics.csv"
+    fieldnames = ["Instancia", "Capacidad_Max", "Peso_Ocupado", "Ganancia_Total"]
+    with open(nombre_archivo, mode="w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(resultados)
+    
+    print(f"\nReporte estadístico guardado exitosamente en: {nombre_archivo}")
 
+# Bloque de ejecución principal
 if __name__ == "__main__":
-    test_manual_knapsack()
+    # Utilizamos exactamente las mismas instancias de prueba que en gp_engine.py
+    items_instancia_1 = [Item(1, 5, 10), Item(2, 4, 40), Item(3, 6, 30), Item(4, 3, 50), Item(5, 2, 15)]
+    instancia_1 = KnapsackInstance("Instancia_1", 12, items_instancia_1)
+    
+    items_instancia_2 = [Item(1, 2, 15), Item(2, 5, 20), Item(3, 8, 25), Item(4, 1, 10), Item(5, 4, 30)]
+    instancia_2 = KnapsackInstance("Instancia_2", 10, items_instancia_2)
+    
+    base_de_datos = [instancia_1, instancia_2]
+    
+    # Ejecutamos el extractor masivo
+    evaluar_instancias_baseline(base_de_datos)
