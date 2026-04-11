@@ -7,8 +7,7 @@ from deap import base, creator, tools, gp, algorithms
 from sklearn.cluster import KMeans
 from knapsack import Item, KnapsackState, KnapsackInstance
 
-# Cambia este número en cada iteración para no sobreescribir tus archivos CSV
-FASE_ACTUAL = 3
+#FASE_ACTUAL = 4
 
 def div_segura(izq, der):
     if der == 0:
@@ -73,10 +72,6 @@ def clasificar_y_evolucionar(lista_instancias, num_clusters=2, generaciones=20):
         promedio_w = np.mean([item.weight for item in instancia.items])
         caracteristicas.append([promedio_p, promedio_w])
         
-    '''AQUÍ ESTÁ K-MEANS HACIENDO SU CHAMBA para la profundización:
-    Toma los vectores de características (peso y ganancia promedio) que calculamos arriba.
-    El algoritmo calcula las distancias matemáticas y agrupa los problemas en clústeres.
-     Finalmente, etiqueta cada instancia con un 0 o un 1 dependiendo del grupo al que pertenezca.'''
     kmeans = KMeans(n_clusters=num_clusters, random_state=None, n_init=10)
     etiquetas = kmeans.fit_predict(caracteristicas)
     

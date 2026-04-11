@@ -1,4 +1,4 @@
-import operator                                  # Operadores matematicos basicos
+'''import operator                                  # Operadores matematicos basicos
 import sys                                       # Para manejo de rutas
 import os                                        # Para obtener rutas del sistema
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))) # Agregar ruta actual al path
@@ -100,4 +100,4 @@ if __name__ == "__main__":      # Bloque de ejecucion principal
     instancia_2 = [[(15, 2), (20, 5), (25, 8), (10, 1)], 12] # Instancia tipo 2
     
     base_de_datos = [instancia_1, instancia_2]   # Agrupa las instancias
-    clasificar_y_evolucionar(base_de_datos)      # Inicia el algoritmo completo
+    clasificar_y_evolucionar(base_de_datos)      # Inicia el algoritmo completo'''
