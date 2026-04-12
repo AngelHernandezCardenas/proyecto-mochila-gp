@@ -1,0 +1,7 @@
+REPORTE DE FORMULAS EVOLUTIVAS - FASE 5
+Cluster 0:
+mul(PW, PW)
+
+Cluster 1:
+add(mul(PW, PW), W)
+

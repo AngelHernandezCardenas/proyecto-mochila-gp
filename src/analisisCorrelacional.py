@@ -41,6 +41,7 @@ def graficar_correlacion():
     plt.legend(loc='lower right')
     plt.tight_layout()
     
+    plt.savefig('correlacion.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 if __name__ == "__main__":
