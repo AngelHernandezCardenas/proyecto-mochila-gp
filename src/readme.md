@@ -45,3 +45,35 @@ Para replicar este entorno de investigación en tu máquina local:
 - Ir a "Herramientas/Tools"
 - Dar clic en 'Gestionar paquetes'.
 - Buscar 'matplotlib', 'deap' y 'pandas'. Buscar en PyPi y descargar las librerías.
+
+## Análisis de Minería de Datos con WEKA
+
+Para validar la complejidad del espacio de búsqueda y la eficacia de los algoritmos seleccionados, se realizó una auditoría de datos utilizando WEKA (Waikato Environment for Knowledge Analysis).
+
+Si deseas replicar este análisis, el repositorio incluye un archivo estructurado llamado `mochila_mineria.arff`.
+
+Paso a paso para la validación visual:
+
+1. Carga de Datos:
+   * ABre WEKA Explorer.
+   * En la pestaña Preprocess, haz clic en Open file... y carga `mochila_mineria.arff`.
+
+2. Diagrama de Dispersión (Complejidad del Problema):
+   * Ve a la pestaña Visualize.
+   * Localiza el gráfico que cruza `peso_w` (eje X) con `ganancia_p` (eje Y).
+   * Selecciona `clase` en el filtro de color.
+   * Resultado: Demostración visual de la dispersión caótica de los objetos valiosos, justificando el descarte de lógicas de empaquetado lineales.
+
+3. Validación de Clustering (K-Means):
+   * Ve a la pestaña Cluster.
+   * Haz clic en Choose y selecciona `SimpleKMeans`. Configura `numClusters` a 2.
+   * Haz clic en Start.
+   * Haz clic derecho sobre el resultado en la lista y selecciona *Visualize cluster assignments.
+   * Resultado: Validación de que el agrupamiento no supervisado logra encontrar fronteras matemáticas claras en el caos vectorial.
+
+4. Extracción de Reglas (Árbol de Decisión J48):
+   * Ve a la pestaña Classify.
+   * Haz clic en Choose y selecciona `trees > J48`. Asegúrate de predecir la variable `clase`.
+   * Haz clic en Start.
+   * Haz clic derecho en el resultado y selecciona Visualize tree.
+   * Resultado: Comprobación de que la variable `ratio_pw` es el umbral de información principal de un algoritmo voraz estático, demostrando su rigidez frente a la adaptabilidad de la Programación Genética.

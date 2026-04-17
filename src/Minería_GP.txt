@@ -1,0 +1,38 @@
+@RELATION mochila_correlacion
+
+@ATTRIBUTE peso_w  NUMERIC
+@ATTRIBUTE ganancia_p NUMERIC
+@ATTRIBUTE ratio_pw NUMERIC
+@ATTRIBUTE clase {Bajo_Valor, Alto_Valor}
+
+@DATA
+1.5, 71.2, 47.46, Alto_Valor
+2.1, 52.3, 24.90, Bajo_Valor
+4.5, 92.1, 20.46, Bajo_Valor
+5.2, 18.5, 3.55, Bajo_Valor
+8.1, 84.3, 10.40, Bajo_Valor
+9.5, 99.2, 10.44, Bajo_Valor
+10.2, 45.1, 4.42, Bajo_Valor
+12.8, 21.4, 1.67, Bajo_Valor
+15.3, 88.5, 5.78, Bajo_Valor
+18.4, 12.1, 0.65, Bajo_Valor
+1.8, 40.5, 22.50, Bajo_Valor
+3.2, 65.4, 20.43, Bajo_Valor
+6.7, 78.1, 11.65, Bajo_Valor
+4.1, 88.9, 21.68, Bajo_Valor
+9.1, 55.2, 6.06, Bajo_Valor
+11.4, 62.1, 5.44, Bajo_Valor
+14.2, 44.8, 3.15, Bajo_Valor
+16.5, 11.2, 0.67, Bajo_Valor
+19.1, 87.6, 4.58, Bajo_Valor
+2.5, 81.3, 32.52, Alto_Valor
+4.8, 70.2, 14.62, Bajo_Valor
+7.9, 15.4, 1.94, Bajo_Valor
+13.6, 91.5, 6.72, Bajo_Valor
+15.9, 50.3, 3.16, Bajo_Valor
+17.8, 77.2, 4.33, Bajo_Valor
+0.5, 10.2, 20.40, Bajo_Valor
+3.3, 22.1, 6.69, Bajo_Valor
+5.6, 35.2, 6.28, Bajo_Valor
+8.4, 96.3, 11.46, Bajo_Valor
+12.1, 58.7, 4.85, Bajo_Valor
