@@ -1,5 +1,3 @@
-import sys
-sys.path.insert(0, 'src')
 import operator
 import random
 import multiprocessing
@@ -10,7 +8,7 @@ from sklearn.cluster import KMeans
 from knapsack import Item, KnapsackState, KnapsackInstance
 
 # Identificador de la iteracion final
-FASE_ACTUAL = 5
+FASE_ACTUAL = 
 
 # 1. Definicion de funciones matematicas seguras para el arbol
 def div_segura(izq, der):
@@ -155,8 +153,19 @@ def clasificar_y_evolucionar(lista_instancias, num_clusters=2, generaciones=20):
             
     return mejores_reglas
 
-# Bloque de ejecucion principal
+# Bloque de ejecucion principal automatizado
 if __name__ == "__main__":
-    # Inyeccion de estres computacional: 10 problemas con 50 objetos aleatorios
-    base_de_datos = generar_base_datos_aleatoria(num_instancias=10, num_objetos=50)
-    clasificar_y_evolucionar(base_de_datos, num_clusters=2, generaciones=20)
+    # Bucle para ejecutar 5 fases continuas (Fases 6 a 10)
+    for nueva_fase in range(6, 11):
+        print(f" FASE {nueva_fase}")
+        
+        # Actualizamos la variable directamente
+        FASE_ACTUAL = nueva_fase
+        
+        # Inyeccion de estres computacional: 10 problemas con 50 objetos aleatorios
+        base_de_datos = generar_base_datos_aleatoria(num_instancias=10, num_objetos=50)
+        
+        # Ejecucion del motor
+        clasificar_y_evolucionar(base_de_datos, num_clusters=2, generaciones=20)
+        
+    print("RESTANTES HAN TERMINADO EXITOSAMENTE.")
