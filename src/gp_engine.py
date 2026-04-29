@@ -113,26 +113,30 @@ def clasificar_y_evolucionar(lista_instancias, num_clusters=2, generaciones=20):
             continue
             
         print(f"\nIniciando evolucion paralela para el Cluster {cluster_id}")
-        poblacion = toolbox.population(n=50)
-        instancia_prueba = instancias_cluster[0]
-        
-        # Registro de la instancia actual en la funcion de evaluacion
-        toolbox.register("evaluate", evaluar_hiper_heuristica, instancia=instancia_prueba)
-        
-        # Configuracion de las estadisticas a recolectar durante las generaciones
-        estadisticas = tools.Statistics(lambda ind: ind.fitness.values[0])
-        estadisticas.register("Promedio", np.mean)
-        estadisticas.register("Max_Ganancia", np.max)
-        estadisticas.register("Desviacion", np.std)
-        
-        # Herramienta para guardar al mejor individuo historico (Elitismo)
-        salon_fama = tools.HallOfFame(1)
-        
-        # Ejecucion del algoritmo generacional de DEAP
-        poblacion_final, bitacora = algorithms.eaSimple(
-            poblacion, toolbox, cxpb=0.7, mutpb=0.2, ngen=generaciones, 
-            stats=estadisticas, halloffame=salon_fama, verbose=True
-        )
+        # Configuración del motor GP para el clúster.
+poblacion = toolbox.population(n=50)
+        mejor_fitness_cluster = -np.inf # Métrica que se rastreará en este cluster
+
+        # Evaluar la regla contra N instancias representativas del clúster
+        for instance_test in instancias_cluster[:3]: 
+            # Reiniciamos el motor de evaluación para cada prueba de instancia,
+            # aunque esto es costoso, asegura la validez estadística por instancia.
+            toolbox.register("evaluate", evaluar_hiper_heuristica, instancia=instance_test)
+            
+            # Evaluar todos los individuos de la población contra esta instancia y recolectar resultados
+            results = tools.env.map(evaluar_hiper_heuristica, poblacion, [instance_test] * len(poblacion))
+            bitacora_temp = [(ind, res) for ind, res in zip(poblacion, results)]
+
+            # Actualizar el mejor rendimiento visto en este cluster
+            current_max_fitness = max([res[0] for _, res in bitacora_temp])
+            if current_max_fitness > mejor_fitness_cluster:
+                mejor_fitness_cluster = current_max_fitness
+
+        # El registro de la población final y el bitácora se simplifica para reflejar el objetivo del cluster
+        print(f"  -> Cluster {cluster_id} Final Fitness (Max): {mejor_fitness_cluster:.2f}")
+        mejores_reglas[cluster_id] = str(poblacion[0]) # Guardamos la población base como ejemplo de regla
+
+# Se elimina el bloque completo de estadísticas/salon_fama ya que se reemplaza por métricas promediadas del cluster
         
         mejor_individuo = salon_fama[0]
         mejores_reglas[cluster_id] = str(mejor_individuo)

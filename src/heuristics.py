@@ -6,7 +6,7 @@ def heuristica_max_pw(mochila, objetos):
     # Ordena los objetos por su ratio (ganancia/peso) de mayor a menor
     mejores = sorted(objetos, key=lambda x: x.ratio, reverse=True)
     for obj in mejores:
-        if mochila.can_pack(obj): 
+        if mochila.can_pack(obj):
             return obj
     return None 
 
@@ -53,15 +53,13 @@ def evaluar_instancias_baseline(lista_instancias):
     print(f"\nReporte estadístico guardado exitosamente en: {nombre_archivo}")
 
 # Bloque de ejecución principal
+from gp_engine import generar_base_datos_aleatoria # Asegurar que esta función está disponible
+
 if __name__ == "__main__":
-    # Utilizamos exactamente las mismas instancias de prueba que en gp_engine.py
-    items_instancia_1 = [Item(1, 5, 10), Item(2, 4, 40), Item(3, 6, 30), Item(4, 3, 50), Item(5, 2, 15)]
-    instancia_1 = KnapsackInstance("Instancia_1", 12, items_instancia_1)
-    
-    items_instancia_2 = [Item(1, 2, 15), Item(2, 5, 20), Item(3, 8, 25), Item(4, 1, 10), Item(5, 4, 30)]
-    instancia_2 = KnapsackInstance("Instancia_2", 10, items_instancia_2)
-    
-    base_de_datos = [instancia_1, instancia_2]
+    # Generar el set de datos estocástico masivo para una comparación justa
+    num_pruebas = 10 # Coincidir con la cantidad usada en gp_engine por fase
+    objetos_por_instancia = 50
+    base_de_datos = generar_base_datos_aleatoria(num_instancias=num_pruebas, num_objetos=objetos_por_instancia)
     
     # Ejecutamos el extractor masivo
     evaluar_instancias_baseline(base_de_datos)
