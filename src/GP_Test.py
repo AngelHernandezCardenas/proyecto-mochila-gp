@@ -301,7 +301,7 @@ def ejecutar_grid_search():
                     "Mediana_Score": mediana_score,
                     "Tiempo_Inicio": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(tiempo_inicio)),
                     "Tiempo_Fin": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(tiempo_fin)),
-                    "Tiempo_Segundos": tiempo_segundos
+                    "Tiempo_Segundos": round(tiempo_segundos, 2)
                 }
                 resultados_totales.append(resultado)
                 resultados_lote_actual.append(resultado)
