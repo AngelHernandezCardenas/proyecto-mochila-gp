@@ -1,7 +1,0 @@
- REPORTE DE FÓRMULAS EVOLUTIVAS 
-Clúster 0:
-mul(P, P)
-
-Clúster 1:
-mul(PW, W)
-
