@@ -1,21 +1,20 @@
-﻿import operator
+import operator
 import random
 import numpy as np
-import pandas as pd
 from deap import base, creator, tools, gp, algorithms
 
-# ─── Parámetros principales de la simulación ────────────────────────────────
+# --- Parametros principales de la simulacion ---
 NUM_FASES       = 10   # Entornos distintos a recorrer
 GEN_POR_FASE    = 5    # Generaciones por fase
-TAM_POBLACION   = 50   # Individuos por generación
+TAM_POBLACION   = 50   # Individuos por generacion
 TAM_ELITE       = 10   # Semilla transferida entre fases
-MAX_TREE_HEIGHT = 8    # Límite de altura del árbol, controla bloat
+MAX_TREE_HEIGHT = 8    # Limite de altura del arbol, controla bloat
 NUM_INSTANCIAS  = 10   # Instancias knapsack por fase
 NUM_OBJETOS     = 50   # Objetos por instancia
 
-# ─── Clases del problema Knapsack ───────────────────────────────────────────
+# --- Clases del problema Knapsack ---
 class Item:
-    # Objeto candidato: peso, ganancia y ratio P/W (argumento PW del árbol)
+    # Objeto candidato: peso, ganancia y ratio P/W (argumento PW del arbol)
     def __init__(self, id_item, weight, profit):
         self.id     = id_item
         self.weight = weight
@@ -41,9 +40,9 @@ class KnapsackInstance:
         self.capacity = capacity
         self.items    = items
 
-# ─── Árbol GP: operadores y argumentos ──────────────────────────────────────
+# --- Arbol GP: operadores y argumentos ---
 def div_segura(izq, der):
-    # División protegida contra cero
+    # Division protegida contra cero
     return izq / der if abs(der) > 1e-6 else 1.0
 
 pset = gp.PrimitiveSet("MAIN", 3)
@@ -53,7 +52,7 @@ pset.addPrimitive(operator.mul, 2)
 pset.addPrimitive(div_segura,   2)
 pset.renameArguments(ARG0='P', ARG1='W', ARG2='PW')  # P=profit, W=weight, PW=ratio
 
-# ─── Estructuras DEAP ───────────────────────────────────────────────────────
+# --- Estructuras DEAP ---
 if not hasattr(creator, "FitnessMax"):
     creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 if not hasattr(creator, "Individual"):
@@ -65,18 +64,18 @@ toolbox.register("individual", tools.initIterate,   creator.Individual, toolbox.
 toolbox.register("population", tools.initRepeat,    list, toolbox.individual)
 toolbox.register("compile",    gp.compile,          pset=pset)
 
-# Selección torneo, cruce de subárboles, mutación uniforme
+# Seleccion torneo, cruce de subarboles, mutacion uniforme
 toolbox.register("select", tools.selTournament, tournsize=3)
 toolbox.register("mate",   gp.cxOnePoint)
 toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr, pset=pset)
 
-# Decoradores: descartan árboles que excedan MAX_TREE_HEIGHT (control de bloat)
+# Decoradores: descartan arboles que excedan MAX_TREE_HEIGHT (control de bloat)
 toolbox.decorate("mate",   gp.staticLimit(key=operator.attrgetter("height"), max_value=MAX_TREE_HEIGHT))
 toolbox.decorate("mutate", gp.staticLimit(key=operator.attrgetter("height"), max_value=MAX_TREE_HEIGHT))
 
-# ─── Funciones del motor evolutivo ──────────────────────────────────────────
+# --- Funciones del motor evolutivo ---
 def evaluar_robusto(individuo, lista_instancias):
-    # Fitness = ganancia promedio sobre todas las instancias, penalizado por tamaño del árbol
+    # Fitness = ganancia promedio sobre todas las instancias, penalizado por tamano del arbol
     try:
         rutina_puntuacion = toolbox.compile(expr=individuo)
     except Exception:
@@ -118,7 +117,7 @@ def generar_base_datos_aleatoria(num_instancias=NUM_INSTANCIAS, num_objetos=NUM_
     return instancias
 
 def clasificar_y_evolucionar(lista_instancias, generaciones=GEN_POR_FASE, elite_anterior=None):
-    # Seeding: reutiliza la élite de la fase anterior y completa con nuevos individuos
+    # Seeding: reutiliza la elite de la fase anterior y completa con nuevos individuos
     if elite_anterior:
         poblacion = [toolbox.clone(ind) for ind in elite_anterior]
         while len(poblacion) < TAM_POBLACION:
@@ -128,7 +127,7 @@ def clasificar_y_evolucionar(lista_instancias, generaciones=GEN_POR_FASE, elite_
 
     registrar_evaluador(lista_instancias)
 
-    # Invalidar fitness heredado: nuevo entorno requiere nueva evaluación
+    # Invalidar fitness heredado: nuevo entorno requiere nueva evaluacion
     for ind in poblacion:
         del ind.fitness.values
 
@@ -138,7 +137,7 @@ def clasificar_y_evolucionar(lista_instancias, generaciones=GEN_POR_FASE, elite_
     estadisticas.register("Desviacion",   np.std)
     salon_fama = tools.HallOfFame(TAM_ELITE)
 
-    # Ciclo generacional: evaluar → seleccionar → cruzar → mutar
+    # Ciclo generacional: evaluar -> seleccionar -> cruzar -> mutar
     algorithms.eaSimple(
         poblacion, toolbox,
         cxpb=0.7, mutpb=0.2,
@@ -150,12 +149,12 @@ def clasificar_y_evolucionar(lista_instancias, generaciones=GEN_POR_FASE, elite_
 
     return list(salon_fama)
 
-# ─── Bloque principal ────────────────────────────────────────────────────────
+# --- Bloque principal ---
 if __name__ == "__main__":
     pool_elite = None
 
     for fase in range(1, NUM_FASES + 1):
-        print(f"\n── FASE {fase}/{NUM_FASES} ──────────────────────────────────────")
+        print(f"\n-- FASE {fase}/{NUM_FASES} --")
         base_de_datos = generar_base_datos_aleatoria()
         pool_elite    = clasificar_y_evolucionar(
             base_de_datos,
@@ -163,6 +162,6 @@ if __name__ == "__main__":
             elite_anterior=pool_elite
         )
 
-    print("\n Todas las fases completadas.")
-    print(f" Mejor individuo final:\n{pool_elite[0]}")
-    print(f" Fitness: {pool_elite[0].fitness.values[0]:.4f}")
+    print("\nTodas las fases completadas.")
+    print(f"Mejor individuo final:\n{pool_elite[0]}")
+    print(f"Fitness: {pool_elite[0].fitness.values[0]:.4f}")
