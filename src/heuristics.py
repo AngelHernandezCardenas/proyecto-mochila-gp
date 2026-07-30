@@ -24,7 +24,11 @@ def evaluar_instancias_baseline(lista_instancias):
     
     for instancia in lista_instancias:
         mochila = KnapsackState(capacity=instancia.capacity)
+
         # Creamos una copia de la lista de objetos para ir eliminándolos al empacar
+
+        # Se crea una copia de la lista de objetos para ir eliminándolos al empacar
+
         objetos_disponibles = list(instancia.items) 
         
         # Bucle de empaquetado para la instancia actual
