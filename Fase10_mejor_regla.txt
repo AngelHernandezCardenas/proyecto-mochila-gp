@@ -1,5 +1,0 @@
-Fase 10 - Mejor hiper-heuristica
-mul(PW, PW)
-
-Fitness: 1232.4668
-Nodos: 3  |  Altura: 1

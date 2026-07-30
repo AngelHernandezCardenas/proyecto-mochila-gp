@@ -1,5 +1,0 @@
-Fase 2 - Mejor hiper-heuristica
-mul(add(PW, add(mul(PW, add(P, PW)), PW)), mul(PW, PW))
-
-Fitness: 1154.9285
-Nodos: 13  |  Altura: 5

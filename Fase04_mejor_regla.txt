@@ -1,5 +1,0 @@
-Fase 4 - Mejor hiper-heuristica
-mul(add(mul(div_segura(mul(PW, P), mul(P, PW)), PW), W), mul(PW, PW))
-
-Fitness: 1201.2915
-Nodos: 15  |  Altura: 5
